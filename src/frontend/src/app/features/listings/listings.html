@@ -1,0 +1,99 @@
+<div class="row g-4">
+  <aside class="col-md-3">
+    <form [formGroup]="filters" class="d-flex flex-column gap-3">
+      <div>
+        <label class="form-label" for="targetBudget">Target budget</label>
+        <input id="targetBudget" class="form-control" type="number" min="0" formControlName="targetBudget" />
+      </div>
+
+      <div>
+        <label class="form-label" for="minPrice">Min price</label>
+        <input id="minPrice" class="form-control" type="number" min="0" formControlName="minPrice" />
+      </div>
+
+      <div>
+        <label class="form-label" for="maxPrice">Max price</label>
+        <input id="maxPrice" class="form-control" type="number" min="0" formControlName="maxPrice" />
+      </div>
+
+      <div>
+        <label class="form-label" for="minBedrooms">Min bedrooms</label>
+        <input id="minBedrooms" class="form-control" type="number" min="0" formControlName="minBedrooms" />
+      </div>
+
+      <div>
+        <label class="form-label" for="city">City</label>
+        <input id="city" class="form-control" type="text" formControlName="city" />
+      </div>
+
+      <div>
+        <label class="form-label" for="search">Keyword</label>
+        <input
+          id="search"
+          class="form-control"
+          type="text"
+          placeholder="Search descriptions"
+          formControlName="search"
+        />
+      </div>
+    </form>
+  </aside>
+
+  <section class="col-md-9">
+    @if (errors().length) {
+      <div class="alert alert-danger" role="alert">
+        @for (error of errors(); track error) {
+          <div>{{ error }}</div>
+        }
+      </div>
+    }
+
+    @if (loading()) {
+      <p>Loading listings…</p>
+    } @else if (listings().length === 0) {
+      <p>No listings match these filters.</p>
+    } @else {
+      <p class="text-muted">{{ totalCount() }} listing(s)</p>
+      <div class="d-flex flex-column gap-3">
+        @for (listing of listings(); track listing.id) {
+          <article class="card position-relative">
+            <div class="card-body">
+              <h2 class="h5 card-title">{{ listing.address }}</h2>
+              <p class="card-subtitle mb-2 text-muted">
+                {{ listing.city }}, {{ listing.state }} {{ listing.zip }}
+              </p>
+              <p class="mb-1">{{ listing.price | currency }}</p>
+              <p class="mb-1">Date Listed: {{ listing.listedDate | date:'MM/dd/yyyy' }}</p>
+              <p class="mb-1">{{ listing.bedrooms }} bed · {{ listing.bathrooms }} bath · {{ listing.sqft }} sqft</p>
+              <p class="mb-1">{{ listing.description }}</p>
+              @if (listing.score != null) {
+                <p class="mb-0 small">Match score: {{ listing.score | percent:'1.0-0' }}</p>
+              }
+              <div class="position-absolute top-0 end-0 text-muted small ps-1 pe-1"><span class="small pe-2 text-muted">{{ listing.source }}</span><span [class]="'badge ' + statusBadgeClass(listing.status)">{{ listing.status | titlecase }}</span></div>
+            </div>
+          </article>
+        }
+      </div>
+
+      @if (totalPages() > 1) {
+        <nav class="mt-4" aria-label="Listings pagination">
+          <ul class="pagination">
+            <li class="page-item" [class.disabled]="page() === 1">
+              <button type="button" class="page-link" (click)="goToPage(page() - 1)">Previous</button>
+            </li>
+            @for (pageNumber of pageNumbers(); track pageNumber) {
+              <li class="page-item" [class.active]="pageNumber === page()">
+                <button type="button" class="page-link" (click)="goToPage(pageNumber)">
+                  {{ pageNumber }}
+                </button>
+              </li>
+            }
+            <li class="page-item" [class.disabled]="page() === totalPages()">
+              <button type="button" class="page-link" (click)="goToPage(page() + 1)">Next</button>
+            </li>
+          </ul>
+        </nav>
+      }
+    }
+  </section>
+</div>

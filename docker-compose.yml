@@ -1,0 +1,32 @@
+services:
+  frontend-client:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    volumes:
+      # Mount source directory for live updates
+      - ./src/frontend:/app
+      # Prevent host node_modules from overriding container node_modules
+      - /app/node_modules
+    environment:
+      # Enables polling so Angular CLI detects saved files in Docker
+      - CHOKIDAR_USEPOLLING=true
+
+  backend-api:
+    build:
+      context: ./src/backend
+      dockerfile: Dockerfile
+    ports:
+      # 5001 is reserved for apple airplay receiver
+      - "5001:5000"
+    command: ["dotnet", "watch", "run", "--non-interactive", "--urls", "http://0.0.0.0:5000"]
+    volumes:
+      - ./src/backend:/app
+      - /app/bin
+      - /app/obj
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000

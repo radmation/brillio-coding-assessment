@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": ".NET Core Launch (API)",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        "program": "${workspaceFolder}/src/backend/bin/Debug/net8.0/backend.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/src/backend",
+        "stopAtEntry": false,
+        "serverReadyAction": {
+          "action": "openUrl",
+          "pattern": "\\bnow listening on:\\s+(https?://\\S+)",
+          "uriFormat": "%s/swagger"
+        }
+      }
+    ]
+  }
